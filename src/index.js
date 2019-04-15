@@ -56,6 +56,12 @@ export default class App extends Component {
           ? <Button onPress={this.getProjectList} title='Carregar Projetos' />
           : <Button onPress={this.signIn} title='Entrar' />
         }
+        {this.state.projects.map(project => {
+          <View key={project._id} style={{ marginTop: 15 }}>
+            <Text style={{ fontWeight: 'bold' }}>{project.title}</Text>
+            <Text>{project.description}</Text>
+          </View>
+        })}
       </View>
     );
   }
