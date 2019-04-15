@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, Button, AsyncStorage, Alert } from 'react-native';
 import Api from './services/api';
+import api from './services/api';
 
 export default class App extends Component {
 
   state = {
     loggedInUser: null,
     errorMessage: null,
+    projects: [],
   };
 
   signIn = async () => {
@@ -27,6 +29,16 @@ export default class App extends Component {
     }
   };
 
+  getProjectList = async () => {
+    try {
+      const response = await api.get('/projects');
+      const { projects } = response.data;
+      this.setState({ projects });
+    } catch (response) {
+      this.setState({ errorMessage: response.data.error });
+    }
+  };
+
   async componentDidMount() {
     const token = await AsyncStorage.getItem('@CodeApi: token');
     const user = JSON.parse(await AsyncStorage.getItem('@CodeApi: user'));
@@ -40,7 +52,10 @@ export default class App extends Component {
       <View style={styles.container}>
         {!!this.state.errorMessage && <Text>{this.state.errorMessage}</Text>}
         {!!this.state.loggedInUser && <Text>{this.state.loggedInUser.name}</Text>}
-        <Button onPress={this.signIn} title='Entrar'></Button>
+        {this.state.loggedInUser
+          ? <Button onPress={this.getProjectList} title='Carregar Projetos' />
+          : <Button onPress={this.signIn} title='Entrar' />
+        }
       </View>
     );
   }
